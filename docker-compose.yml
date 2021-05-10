@@ -1,0 +1,49 @@
+version: '3'
+services:
+    metabase:
+        image: metabase/metabase:latest
+        container_name: metabase
+        hostname: metabase
+        volumes: 
+            - /dev/urandom:/dev/random:ro
+        ports:
+            - 3000:3000
+        environment: 
+            MB_DB_TYPE: postgres
+            MB_DB_PORT: 5432
+            MB_DB_HOST: postgres
+        networks: 
+            - metabase
+        depends_on: 
+            - metabase-postgres
+        env_file:
+            - database.env
+    metabase-postgres:
+        image: postgres:alpine
+        container_name: postgres
+        hostname: postgres
+        env_file:
+            - database.env
+        volumes:
+            - database-data:/var/lib/postgresql/data/
+        networks: 
+            - metabase
+    # mysql-slave:
+    #     image: "mysql:5.7"
+    #     restart: always
+    #     container_name: slave
+    #     env_file:
+    #         - database.env
+    #     volumes:
+    #         - mysql-slave:/var/lib/mysql
+    #         - ./slave.conf.d:/etc/mysql/conf.d/config-file.cnf
+    #     ports:
+    #         - "8001:3306"
+    #     networks: 
+    #         - metabase
+networks: 
+    metabase:
+        driver: bridge
+volumes:
+    database-data:
+    # mysql-slave:
